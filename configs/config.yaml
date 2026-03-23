@@ -1,0 +1,74 @@
+# Device configurations for different edge targets
+defaults:
+  - device: raspberry_pi_zero
+  - quant: int8_ptq
+  - comms: mqtt_local
+
+# Device-specific configurations
+device:
+  raspberry_pi_zero:
+    cpu_cores: 1
+    memory_mb: 512
+    storage_mb: 8192
+    power_consumption_mw: 1000
+    inference_targets: ["tflite", "onnx"]
+    input_shape: [1, 32, 32, 3]
+    batch_size: 1
+    max_fps: 10
+    
+  esp32_cam:
+    cpu_cores: 2
+    memory_mb: 320
+    storage_mb: 4096
+    power_consumption_mw: 200
+    inference_targets: ["tflite_micro"]
+    input_shape: [1, 32, 32, 3]
+    batch_size: 1
+    max_fps: 5
+    
+  jetson_nano:
+    cpu_cores: 4
+    memory_mb: 4096
+    storage_mb: 16384
+    power_consumption_mw: 5000
+    inference_targets: ["tflite", "onnx", "tensorrt"]
+    input_shape: [1, 32, 32, 3]
+    batch_size: 1
+    max_fps: 30
+
+# Quantization configurations
+quant:
+  int8_ptq:
+    method: "post_training"
+    bits: 8
+    calibration_samples: 100
+    per_channel: true
+    
+  int8_qat:
+    method: "quantization_aware_training"
+    bits: 8
+    epochs: 10
+    per_channel: true
+    
+  int4_ptq:
+    method: "post_training"
+    bits: 4
+    calibration_samples: 200
+    per_channel: false
+
+# Communication configurations
+comms:
+  mqtt_local:
+    broker_host: "localhost"
+    broker_port: 1883
+    topic_prefix: "edge_vision"
+    qos_level: 1
+    keepalive: 60
+    
+  mqtt_cloud:
+    broker_host: "mqtt.cloudprovider.com"
+    broker_port: 8883
+    topic_prefix: "edge_vision"
+    qos_level: 2
+    keepalive: 60
+    tls: true
